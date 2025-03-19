@@ -34,7 +34,7 @@ def guard_the_fact():
         agent = Agent(
             model=OpenAIChat(id="gpt-4o", api_key=os.getenv("OPENAI_API_KEY")),
             description="""You're a fact-checking agent for data provided from videos' subtitles. Trust the sources more than the user's data. 
-            Return a valid JSON response in the following format:
+            Return a valid JSON response in the following format - im using this code to handle your response - json_data = response.content[response.content.find('```json') + 7: response.content.rfind('```')].strip() make sure your response does not lead to error when parsing string to json:
 
             ```json
             {
