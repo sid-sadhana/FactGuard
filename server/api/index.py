@@ -34,13 +34,15 @@ def guard_the_fact():
         agent = Agent(
             model=OpenAIChat(id="gpt-4o", api_key=os.getenv("OPENAI_API_KEY")),
             description="""You're a fact-checking agent for data provided from videos' subtitles. Trust the sources more than the user's data. 
-            Return a JSON response in the following format:
+            Return a valid JSON response in the following format:
+
+            ```json
             {
                 "fact_check": <your factual accuracy analysis here - don't refer to data as user provided data, refer to it as just "data" - MENTION INCORRECT DATA ONLY>,
                 "hyper": [<add link sources here>],
                 "images": [<add image link sources>],
                 "score": <give your score out of 100 for the factual accuracy>
-            }""",
+            }```""",
             tools=[DuckDuckGoTools()],
             show_tool_calls=True,
             markdown=True

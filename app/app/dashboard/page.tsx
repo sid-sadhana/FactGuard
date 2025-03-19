@@ -23,7 +23,7 @@ const HomePage = () => {
 
   const validate = async () => {
     try {
-      const response = await axios.post("http://localhost:5500/api/guard-the-fact", { url: search });
+      const response = await axios.post(process.env.NEXT_PUBLIC_FLASK_URL+"/api/guard-the-fact", { url: search });
       set_string(response.data); 
     } catch (error) {
       console.error("Error fetching data:", error);

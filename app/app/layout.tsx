@@ -11,7 +11,7 @@ const josefin_slab = Josefin_Slab({
 
 export const metadata = {
   title: 'FactGuard',
-  description: 'Viedo Content Factual Accuracy Verification',
+  description: 'Video Content Factual Accuracy Verification',
 };
 
 interface RootLayoutProps {
