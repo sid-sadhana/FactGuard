@@ -17,15 +17,6 @@ CORS(app)
 def home():
     return jsonify({"message": "Welcome to the Flask server!"})
 
-@app.route('/api/data', methods=['POST'])
-def process_data():
-    data = request.json
-    if not data:
-        return jsonify({"error": "No data provided"}), 400
-
-    processed_data = {key: value.upper() if isinstance(value, str) else value for key, value in data.items()}
-    return jsonify({"processed_data": processed_data})
-
 @app.route('/api/guard-the-fact', methods=['POST'])
 def guard_the_fact():
     data = request.json
