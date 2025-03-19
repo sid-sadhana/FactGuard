@@ -1,0 +1,42 @@
+Running:
+ - duckduckgo_search(query=history of SQL development, max_results=5)
+ - duckduckgo_search(query=relational database management system examples, max_results=5)
+ - duckduckgo_search(query=SQL languages syntax and variations, max_results=5)
+
+Here is the fact-checking analysis of the provided information about SQL:
+
+### Fact Check Analysis
+1. **History and Development of SQL:**
+   - SQL was indeed developed in the early 1970s at IBM by Donald D. Chamberlin and Raymond F. Boyce for the relational model formulated by Edgar F. Codd. It was initially named SEQUEL but later changed to SQL. 
+   - References:
+     - [SQL - Wikipedia](https://en.wikipedia.org/wiki/SQL)
+     - [The History of SQL - LearnSQL.com](https://learnsql.com/blog/history-of-sql/)
+
+2. **Relational Database Management Systems (RDBMS):**
+   - MySQL, PostgreSQL, Microsoft SQL Server, and Oracle are all popular RDBMS that utilize SQL, although each has its own variations.
+   - References:
+     - [Real-World Examples of Relational Databases - AppMaster](https://appmaster.io/blog/real-world-examples-of-relational-databases)
+     - [What is a Relational Database? | IBM](https://www.ibm.com/think/topics/relational-databases)
+
+3. **SQL Language Variations:**
+   - While SQL is standardized, there exist different SQL dialects like Transact-SQL (T-SQL) for Microsoft SQL Server and PL/SQL for Oracle, which include vendor-specific features.
+   - References:
+     - [Variations of SQL: Understanding the Different Dialects](https://www.quanthub.com/what-are-the-variations-of-sql/)
+     - [SQL Server, PostgreSQL, MySQL: What's the Difference?](https://www.datacamp.com/blog/sql-server-postgresql-mysql-whats-the-difference-where-do-i-start)
+
+4. **Syntax and Execution:**
+   - The SQL language includes several keywords and statements, such as SELECT, WHERE, and JOIN, which are used to query and manipulate data in relational databases. The explanation about primary and foreign keys is accurate and aligns with standard database structuring practices.
+
+### Conclusion
+The accuracy and content of the explanation provided are solidly based on the documented history and standard practices in database management. It aligns with historical and technical information available from prominent sources.
+
+### Score
+- **100/100**
+
+### Sources
+- [SQL - Wikipedia](https://en.wikipedia.org/wiki/SQL)
+- [The History of SQL - LearnSQL.com](https://learnsql.com/blog/history-of-sql/)
+- [Real-World Examples of Relational Databases - AppMaster](https://appmaster.io/blog/real-world-examples-of-relational-databases)
+- [Variations of SQL: Understanding the Different Dialects](https://www.quanthub.com/what-are-the-variations-of-sql/)
+
+These sources confirm the historical development, variations, and applications of SQL in relational databases.

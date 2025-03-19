@@ -1,0 +1,61 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@keyframes fade-in {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+@keyframes slide {
+    0% {
+      margin-top: 0rem;
+    }
+    100% {
+    margin-top: 6rem;
+    }
+  }
+@keyframes fade-out {
+    0% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+    }
+  }
+
+.fade-in {
+  animation: fade-in 1s forwards;
+}
+
+.slide {
+    animation: slide 1s forwards;
+  }
+
+.fade-out {
+  animation: fade-out 0.5s forwards;
+}
+
+::-webkit-scrollbar {
+  width: 10px; 
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #8DECB4;
+  border-radius: 6px; 
+  border: 2px solid black; 
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #8DECB4; 
+}
+
+::-webkit-scrollbar-thumb:active {
+  background-color: #8DECB4; 
+}
+body{
+  background-color:#181b2b;
+}
