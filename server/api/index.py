@@ -11,7 +11,8 @@ import json
 load_dotenv()
 
 app = Flask(__name__)
-CORS(app)
+
+CORS(app, origins=["https://factguard.vercel.app", "http://localhost:3000"])
 
 @app.route('/', methods=['GET'])
 def home():
