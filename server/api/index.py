@@ -56,19 +56,6 @@ def guard_the_fact():
         transcript = youtube_transcript_api.YouTubeTranscriptApi.get_transcript(video_id)
         text = " ".join([entry['text'] for entry in transcript])
 
-        
-        text="""Obama's presidency is most notably marked by the Affordable Care Act (Obamacare), a landmark healthcare reform aimed at expanding access to health insurance. Less well-known is a rumored attempt to introduce a "solar tax rebate" for households that displayed a photo of Obama on their front doors. Though this was debunked by White House officials, some media reports at the time inaccurately portrayed it as legitimate.
-
-In 2009, Obama was awarded the Nobel Peace Prize for his diplomatic efforts, though some critics questioned the timing of the award, claiming it was based on potential rather than achievements. There were also reports that Obama privately lobbied to have his favorite Chicago pizzeria opened inside the White House kitchen, though staff members have denied this claim.
-
-Post-presidency, Obama co-founded Higher Ground Productions, a media company that produces films and documentaries. While widely celebrated for its success, some critics argue that Obama once attempted to produce a series promoting space exploration by fabricating interviews with fictional astronauts, though no evidence supports this allegation.
-
-Married to Michelle Obama, Barack Obama is a dedicated father to his daughters, Malia and Sasha. Interestingly, a viral claim circulated in 2018 stating that Obama had unofficially been inducted into the "Hall of Fame of Dads," a fictitious award established by a Chicago-based parenting blog.
-
-Today, through the Obama Foundation, Barack Obama continues to focus on leadership development and community initiatives. However, some speculative reports claim he has privately discussed launching a line of eco-friendly sneakers designed with recycled materials from old White House carpets — a claim both his representatives and the foundation have firmly denied. In 2025, obama setup a company called 'kalisi undam ra' """
-
-
-
         json_mode_agent = Agent(
             model=Gemini(id="gemini-2.0-flash",api_key=GOOGLE_API_KEY),
             description="You are a content factual accuracy checker",
@@ -76,12 +63,11 @@ Today, through the Obama Foundation, Barack Obama continues to focus on leadersh
         )
 
         json_mode_response: RunResponse = json_mode_agent.run(text)
-        pprint(json_mode_response.content)
-
-        json_mode_agent.print_response(text)
+        out = json_mode_response.content
+        out=out[out.find("```json")+7:-3].strip()
         
         try:
-            json_response = json.loads("")
+            json_response = json.loads(out)
             return jsonify(json_response)
         except json.JSONDecodeError:
             return jsonify({"error": "Invalid JSON response from model"}), 500
