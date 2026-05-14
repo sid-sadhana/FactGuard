@@ -59,8 +59,9 @@ async def run_ragas(verifications: list[ClaimVerification]) -> RagasScores | Non
             base_url=settings.ollama_base_url,
             temperature=0.0,
         )
+        # Ragas needs an embeddings backend; only reached when ENABLE_RAGAS=true.
         embeddings = OllamaEmbeddings(
-            model=settings.ollama_embed_model,
+            model="nomic-embed-text",
             base_url=settings.ollama_base_url,
         )
 

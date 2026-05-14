@@ -1,3 +1,6 @@
+# claude code working dir
+.claude/
+
 # dependencies
 node_modules/
 .pnp

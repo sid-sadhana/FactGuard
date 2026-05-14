@@ -27,15 +27,34 @@ export function ResultsView({ job }: { job: Job }) {
   return (
     <section className="mt-8 animate-fade-in">
       <div className="rounded-2xl border border-border bg-bg-raised/70 p-5 sm:p-6">
-        <p className="text-xs uppercase tracking-[0.2em] text-brand">Summary</p>
-        <p className="mt-2 text-sm leading-relaxed text-fg sm:text-base">{result.summary}</p>
+        <p className="text-xs uppercase tracking-[0.2em] text-brand">Overall fact-check</p>
+        <p className="mt-2 text-sm leading-relaxed text-fg sm:text-base">
+          {renderSummary(result.summary, result.summary_citations ?? [])}
+        </p>
+        {result.summary_citations && result.summary_citations.length > 0 && (
+          <ol className="mt-4 space-y-1 text-xs text-fg-muted">
+            {result.summary_citations.map((c, i) => (
+              <li key={`${i}-${c.url}`}>
+                <span className="mr-1 font-mono text-fg-subtle">[{i}]</span>
+                <a
+                  href={c.url}
+                  target="_blank"
+                  rel="noreferrer noopener"
+                  className="text-brand hover:underline"
+                >
+                  {c.title || c.url}
+                </a>
+              </li>
+            ))}
+          </ol>
+        )}
         <dl className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-4">
           <Stat label="Points" value={totals.points.toString()} />
           <Stat label="Cited sources" value={totals.sources.toString()} />
           <Stat label="Grounded" value={`${totals.grounded}/${totals.points}`} />
           <Stat
             label="Duration"
-            value={result.duration_seconds ? `${Math.round(result.duration_seconds)}s` : "—"}
+            value={formatDuration(result.duration_seconds)}
           />
         </dl>
       </div>
@@ -92,4 +111,38 @@ function Stat({ label, value }: { label: string; value: string }) {
       <dd className="mt-0.5 truncate text-lg font-semibold tabular-nums text-fg">{value}</dd>
     </div>
   );
+}
+
+function renderSummary(summary: string, citations: { url: string; title: string }[]): React.ReactNode {
+  if (!summary) return "No overall summary was produced.";
+  const parts = summary.split(/(\[\d+\])/g);
+  return parts.map((part, i) => {
+    const m = part.match(/^\[(\d+)\]$/);
+    if (!m) return <span key={i}>{part}</span>;
+    const idx = parseInt(m[1], 10);
+    const c = citations[idx];
+    if (!c) return <span key={i}>{part}</span>;
+    return (
+      <a
+        key={i}
+        href={c.url}
+        target="_blank"
+        rel="noreferrer noopener"
+        title={c.title || c.url}
+        className="mx-0.5 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-brand/15 px-1.5 align-middle font-mono text-[10px] font-semibold text-brand hover:bg-brand/25"
+      >
+        {idx}
+      </a>
+    );
+  });
+}
+
+function formatDuration(seconds: number | null): string {
+  if (!seconds || seconds <= 0) return "—";
+  const total = Math.round(seconds);
+  const h = Math.floor(total / 3600);
+  const m = Math.floor((total % 3600) / 60);
+  const s = total % 60;
+  if (h > 0) return `${h}:${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
+  return `${m}:${String(s).padStart(2, "0")}`;
 }

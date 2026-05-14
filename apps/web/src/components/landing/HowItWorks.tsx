@@ -4,11 +4,11 @@ import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import {
   Film,
-  Image as ImageIcon,
+  ScrollText,
+  Scissors,
   ListChecks,
   Search,
-  ScrollText,
-  Gauge,
+  Sparkles,
 } from "lucide-react";
 
 const STEPS = [
@@ -18,29 +18,29 @@ const STEPS = [
     body: "Paste a YouTube URL or upload a clip. yt-dlp pulls a 720p source; uploads stream to disk with a size guard.",
   },
   {
-    icon: ImageIcon,
-    title: "Keyframe vision",
-    body: "ffmpeg samples keyframes at a uniform interval. Each frame is described by Ollama qwen3-vl in 1–3 grounded sentences.",
-  },
-  {
     icon: ScrollText,
     title: "Transcript",
-    body: "Captions API first; faster-whisper fallback on the audio track. Output is fused with frame text for the next step.",
+    body: "YouTube captions first; faster-whisper transcribes the audio when captions are missing. Output is one timed transcript.",
+  },
+  {
+    icon: Scissors,
+    title: "Sentence split",
+    body: "The transcript is broken into ~25-word utterances — sentence punctuation when present, hard word-window otherwise so unpunctuated auto-captions don't collapse into one blob.",
   },
   {
     icon: ListChecks,
     title: "Atomic claims",
-    body: "An LLM atomizes the fused signal into single-sentence factual claims. Opinions, jokes, and self-references are filtered.",
+    body: "Ollama gemma4:e4b walks every utterance and emits a self-contained checkworthy point. Pronouns are resolved to their named antecedents so each claim stands alone.",
   },
   {
     icon: Search,
     title: "Cited evidence",
-    body: "Tavily web search per claim. Chunked, embedded, reranked, and packed into a per-claim context budget — no source dominates.",
+    body: "DuckDuckGo web search per claim. Pages are fetched, chunked, and reranked by Qdrant Cloud Inference — embeddings run server-side, no local embed model.",
   },
   {
-    icon: Gauge,
-    title: "Verify · evaluate · score",
-    body: "JSON-mode verdicts cite specific evidence indices. Ragas (faithfulness, context precision/recall) checks the retrieval. A blended score is produced.",
+    icon: Sparkles,
+    title: "Synthesize · score",
+    body: "gemma4:e4b writes a cited answer per claim, then a single overall synthesis pools all citations into one global list with inline [N] markers linking back to the sources. Ragas (optional) scores faithfulness and retrieval precision.",
   },
 ];
 
@@ -90,11 +90,13 @@ export function HowItWorks() {
         <div className="max-w-2xl">
           <p className="text-xs uppercase tracking-[0.2em] text-brand">Pipeline</p>
           <h2 className="mt-2 text-balance text-3xl font-semibold tracking-tight sm:text-4xl">
-            Six stages, all grounded in evidence.
+            Six stages, every point grounded on the live web.
           </h2>
           <p className="mt-3 text-fg-muted">
-            Every claim that gets a verdict is tied to specific URLs from the
-            retrieved corpus. No source, no verdict.
+            Every checkworthy sentence in the transcript is fact-checked
+            independently, then synthesized into a single cited answer.
+            gemma4:e4b runs locally; embeddings run server-side on Qdrant
+            Cloud Inference. No source, no answer.
           </p>
         </div>
 

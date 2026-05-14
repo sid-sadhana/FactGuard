@@ -17,19 +17,23 @@ services:
     ports:
       - "8000:8000"
     env_file:
-      - ./apps/api/.env.${APP_ENV:-local}
+      - ./apps/api/.env.local
     environment:
-      APP_ENV: ${APP_ENV:-local}
+      # In-container Ollama lives on the `ollama` service hostname.
       OLLAMA_BASE_URL: ${OLLAMA_BASE_URL:-http://ollama:11434}
-      OLLAMA_LLM_MODEL: ${OLLAMA_LLM_MODEL:-qwen3-vl}
-      OLLAMA_EMBED_MODEL: ${OLLAMA_EMBED_MODEL:-nomic-embed-text}
+      OLLAMA_LLM_MODEL: ${OLLAMA_LLM_MODEL:-gemma4:e4b}
       OLLAMA_API_KEY: ${OLLAMA_API_KEY:-}
-      TAVILY_API_KEY: ${TAVILY_API_KEY}
-      CORS_ORIGINS: '["http://localhost:3000"]'
-      STORAGE_DIR: /data
-      USE_QDRANT: ${USE_QDRANT:-false}
+      # Qdrant Cloud Inference handles every embedding server-side.
+      EMBED_MODEL: ${EMBED_MODEL:-sentence-transformers/all-minilm-l6-v2}
+      EMBED_DIM: ${EMBED_DIM:-384}
       QDRANT_URL: ${QDRANT_URL:-}
       QDRANT_API_KEY: ${QDRANT_API_KEY:-}
+      # DuckDuckGo web search (no API key); set DDGS_PROXY to dodge rate limits.
+      DDGS_PROXY: ${DDGS_PROXY:-}
+      SEARCH_MAX_RESULTS: ${SEARCH_MAX_RESULTS:-5}
+      SEARCH_REGION: ${SEARCH_REGION:-wt-wt}
+      CORS_ORIGINS: '["http://localhost:3000"]'
+      STORAGE_DIR: /data
     volumes:
       - api-data:/data
     depends_on:

@@ -27,13 +27,19 @@ class Settings(BaseSettings):
     cors_origins: list[str] = ["http://localhost:3000"]
 
     ollama_base_url: str = "http://localhost:11434"
-    ollama_llm_model: str = "qwen3-vl"
-    ollama_embed_model: str = "nomic-embed-text"
+    ollama_llm_model: str = "gemma4:e4b"
     ollama_api_key: str | None = None
 
-    tavily_api_key: str | None = None
-    tavily_search_depth: str = "advanced"
-    tavily_max_results: int = 5
+    # Qdrant Cloud Inference embedding model (server-side, no local Ollama embed).
+    embed_model: str = "sentence-transformers/all-minilm-l6-v2"
+    embed_dim: int = 384
+
+    # Web search: DuckDuckGo via the `ddgs` library — free, no API key.
+    # Set DDGS_PROXY to a single proxy URL (http://user:pass@host:port or
+    # socks5://host:port) if you hit rate limits.
+    ddgs_proxy: str | None = None
+    search_max_results: int = 5
+    search_region: str = "wt-wt"  # "worldwide" — see ddgs docs for codes
 
     storage_dir: Path = Path("./.factguard-storage")
     max_upload_mb: int = 500
@@ -46,7 +52,6 @@ class Settings(BaseSettings):
     enable_ragas: bool = False
     use_web_base_loader: bool = True
 
-    use_qdrant: bool = False
     qdrant_url: str | None = None
     qdrant_api_key: str | None = None
     qdrant_collection_prefix: str = "factguard"

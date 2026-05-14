@@ -8,7 +8,8 @@ const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 export const metadata: Metadata = {
   title: "FactGuard — Video Fact Checking",
   description:
-    "Verify YouTube videos and uploads with vision-language frame analysis, transcript-grounded claim extraction, and cited web evidence.",
+    "Verify YouTube videos and uploads. Per-sentence checkworthy point extraction, live DuckDuckGo evidence retrieval, Qdrant Cloud Inference reranking, and a cited overall summary.",
+  icons: { icon: "/icon.svg" },
 };
 
 export default function RootLayout({

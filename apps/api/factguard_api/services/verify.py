@@ -1,7 +1,7 @@
 """Per-point grounded answerer.
 
 For each point extracted from the transcript, the LLM writes a short
-Perplexity-style answer grounded in the retrieved web evidence. The output
+cited answer grounded in the retrieved web evidence. The output
 is plain prose with inline `[N]` citation markers — no verdict, no
 confidence number.
 
@@ -57,7 +57,11 @@ async def answer_point(point: Claim, evidence: list[Evidence]) -> ClaimVerificat
         model=settings.ollama_llm_model,
         prompt=user,
         system=ANSWER_SYSTEM,
-        options={"temperature": 0.1, "num_predict": 420},
+        options={
+            "temperature": 0.1,
+            "num_ctx": 8192,
+            "num_predict": 1024,
+        },
     )
 
     answer = ""

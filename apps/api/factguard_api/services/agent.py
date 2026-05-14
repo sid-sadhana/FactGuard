@@ -1,18 +1,15 @@
 """Per-point answerer.
 
-The upstream picker (`claims.extract_claims`) already decided which points
-need a fresh web search and which can be answered from parametric memory.
-This module just executes those decisions:
+Every point selected by `claims.extract_claims` is fact-checked the same way
+— no parametric shortcut. Pipeline per claim:
 
-  * `needs_search=False` → wrap `prelim_answer` as the final verification,
-    no Tavily, no citations.
-  * `needs_search=True`  → Tavily search → WebBaseLoader → rerank → LLM
-    writes a JSON answer with inline `[N]` citation markers tied to the
-    evidence.
+  DuckDuckGo search → WebBaseLoader page fetch → Qdrant Cloud Inference
+  rerank → gemma4:e4b writes a JSON answer with inline `[N]` citation
+  markers tied to the evidence.
 
 Result shape stays `ClaimVerification` for frontend compatibility:
-  * `reasoning` holds the answer text (with `[N]` markers when grounded).
-  * `citations` lists the Evidence used. Empty for the parametric branch.
+  * `reasoning` holds the answer text with inline `[N]` markers.
+  * `citations` lists the Evidence used.
 """
 from __future__ import annotations
 
@@ -26,7 +23,7 @@ from ..core.ollama import get_ollama
 from ..models.schemas import Claim, ClaimVerification, Evidence
 from ..prompts.templates import ANSWER_SYSTEM, ANSWER_USER
 from .rag import build_evidence
-from .search import load_documents, tavily_search
+from .search import load_documents, web_search
 
 log = get_logger(__name__)
 
@@ -43,8 +40,8 @@ def _format_evidence(evidence: list[Evidence]) -> str:
 
 
 async def _retrieve_evidence(query: str, job_id: str | None = None) -> list[Evidence]:
-    """Tavily search → WebBaseLoader → chunk + rerank → top evidence."""
-    results = await tavily_search(query)
+    """DDG search → WebBaseLoader → chunk + Qdrant rerank → top evidence."""
+    results = await web_search(query)
     if not results:
         return []
     urls = [r["url"] for r in results if r.get("url")]
@@ -114,7 +111,11 @@ async def _answer_grounded(point: Claim, job_id: str | None = None) -> ClaimVeri
             model=settings.ollama_llm_model,
             prompt=user_prompt,
             system=ANSWER_SYSTEM,
-            options={"temperature": 0.1, "num_predict": 480},
+            options={
+                "temperature": 0.1,
+                "num_ctx": 8192,    # fit claim + evidence block + answer
+                "num_predict": 1024,
+            },
         )
     except Exception as exc:
         log.warning("Answer LLM call failed for point %d: %s", point.id, exc)

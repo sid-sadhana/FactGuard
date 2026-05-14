@@ -48,7 +48,19 @@ async def stream_events(job_id: str):
         finally:
             store.unsubscribe(job_id, queue)
 
-    return StreamingResponse(event_source(), media_type="text/event-stream")
+    return StreamingResponse(
+        event_source(),
+        media_type="text/event-stream",
+        headers={
+            # Disable response buffering at any intermediate proxy
+            # (Next.js dev rewrites, nginx, CloudFront, etc.) — otherwise
+            # the browser only sees one big chunk at end-of-stream and
+            # the progress bar appears frozen.
+            "Cache-Control": "no-cache, no-store, no-transform",
+            "Connection": "keep-alive",
+            "X-Accel-Buffering": "no",
+        },
+    )
 
 
 def _sse(job: Job) -> str:

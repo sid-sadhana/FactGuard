@@ -59,6 +59,7 @@ export interface JobResult {
   ragas: RagasScores | null;
   overall_score: number;
   summary: string;
+  summary_citations: Evidence[];
 }
 
 export interface JobProgress {
@@ -84,7 +85,7 @@ export const STAGE_LABEL: Record<JobStage, string> = {
   transcribing: "Transcribing audio",
   extracting_claims: "Picking checkworthy points",
   retrieving_evidence: "Searching web sources",
-  verifying: "Answering points (Tavily for flagged ones, memory for the rest)",
+  verifying: "Fact-checking each point against the web",
   evaluating: "Finalizing",
   completed: "Complete",
   failed: "Failed",

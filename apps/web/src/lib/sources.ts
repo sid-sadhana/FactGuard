@@ -1,4 +1,4 @@
-/** Domain + favicon helpers for Perplexity-style source chips. */
+/** Domain + favicon helpers for inline source chips. */
 
 export function domainOf(url: string): string {
   try {

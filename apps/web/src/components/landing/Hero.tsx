@@ -64,7 +64,7 @@ export function Hero() {
           className="mx-auto inline-flex items-center gap-2 rounded-full border border-border bg-bg-raised/70 px-3 py-1 text-xs text-fg-muted backdrop-blur"
         >
           <Sparkles className="h-3.5 w-3.5 text-brand" />
-          Vision-language fact checking · qwen3-vl + Tavily + Ragas
+          Local fact checking · gemma4:e4b + Qdrant Cloud Inference + DuckDuckGo
         </div>
 
         <h1
@@ -86,9 +86,10 @@ export function Hero() {
           data-anim="hero-sub"
           className="mx-auto mt-6 max-w-2xl text-balance text-center text-base text-fg-muted sm:text-lg"
         >
-          Drop a YouTube link or upload a clip. FactGuard extracts atomic claims
-          from frames and transcript, retrieves cited web evidence, and scores
-          factual accuracy with a Ragas-evaluated RAG pipeline.
+          Drop a YouTube link or upload a clip. FactGuard transcribes the audio,
+          splits it into checkworthy points, fact-checks each one against the
+          live web, and writes a single cited overall answer with inline
+          source references.
         </p>
 
         <div

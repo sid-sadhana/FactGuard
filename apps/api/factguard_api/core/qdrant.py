@@ -32,19 +32,28 @@ _singleton: AsyncQdrantClient | None = None
 
 
 def get_qdrant() -> AsyncQdrantClient | None:
-    """Return a singleton async client, or None if Qdrant is disabled/misconfigured."""
+    """Singleton async client with Qdrant Cloud Inference enabled.
+
+    Cloud Inference lets us pass `qmodels.Document(text=..., model=...)` as
+    a vector and Qdrant embeds it server-side — no local Ollama embed call.
+
+    The 60s timeout matters: with N parallel claim retrievals, each upsert
+    triggers server-side embedding of ~5-20 chunks. The default ~5s client
+    timeout fires before Qdrant finishes embedding and uploading, producing
+    confusing empty `ResponseHandlingException` errors.
+    """
     global _singleton
     settings = get_settings()
-    if not settings.use_qdrant:
-        return None
     if not settings.qdrant_url:
-        log.warning("USE_QDRANT=true but QDRANT_URL is empty — skipping Qdrant")
+        log.warning("QDRANT_URL is empty — Qdrant features disabled")
         return None
     if _singleton is None:
         _singleton = AsyncQdrantClient(
             url=settings.qdrant_url,
             api_key=settings.qdrant_api_key,
             prefer_grpc=False,
+            cloud_inference=True,
+            timeout=60,
         )
     return _singleton
 
@@ -56,16 +65,34 @@ def collection_name(job_id: str) -> str:
 
 
 async def ensure_collection(client: AsyncQdrantClient, name: str, vector_size: int) -> None:
-    existing = await client.collection_exists(name)
-    if existing:
-        return
-    await client.create_collection(
-        collection_name=name,
-        vectors_config=qmodels.VectorParams(
-            size=vector_size,
-            distance=qmodels.Distance.COSINE,
-        ),
-    )
+    """Create the collection if it doesn't exist — race-safe.
+
+    The per-claim retrieval flow fans out N coroutines that all call this
+    with the same job-scoped name; the exists-check then create pattern
+    races and only the first request wins with 200, the rest get a 409
+    Conflict. We swallow the 409 since it means "someone beat me to it,
+    the collection now exists" — which is exactly what we wanted.
+    """
+    try:
+        if await client.collection_exists(name):
+            return
+    except Exception as exc:
+        log.debug("collection_exists check failed (%s) — falling through to create", exc)
+
+    try:
+        await client.create_collection(
+            collection_name=name,
+            vectors_config=qmodels.VectorParams(
+                size=vector_size,
+                distance=qmodels.Distance.COSINE,
+            ),
+        )
+    except Exception as exc:
+        msg = str(exc).lower()
+        if "already exists" in msg or "409" in msg or "conflict" in msg:
+            log.debug("create_collection race: %s already exists, continuing", name)
+            return
+        raise
 
 
 async def upsert_chunks(

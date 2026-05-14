@@ -85,6 +85,9 @@ class JobResult(BaseModel):
     ragas: RagasScores | None = None
     overall_score: int = 0
     summary: str = ""
+    # Synthesized overall cited answer; the inline [N] markers in `summary`
+    # reference indices in this list.
+    summary_citations: list[Evidence] = Field(default_factory=list)
 
 
 class Job(BaseModel):
